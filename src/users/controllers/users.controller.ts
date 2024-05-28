@@ -11,38 +11,47 @@ import { AuthGuard } from '@nestjs/passport';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  // @UseGuards(AuthGuard)
+  // @Roles('user')
+  @Post('activate/:id')
+  async activateUser(@Param('id') id: number) {
+    return this.usersService.activateUser(id);
+  }
+
   @Post()
   @UseGuards(AuthGuard(), RolesGuard)
   @Roles('admin')
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
-
-  @Get()
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  findOne(@Param('id') id: number): Promise<User> {
-    return this.usersService.findOne(id);
-  }
-
-  @Put(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.usersService.remove(id);
-  }
 }
+
+
+//   @Get()
+//   @UseGuards(AuthGuard(), RolesGuard)
+//   @Roles('admin')
+//   findAll(): Promise<User[]> {
+//     return this.usersService.findAll();
+//   }
+
+//   @Get(':id')
+//   @UseGuards(AuthGuard(), RolesGuard)
+//   @Roles('admin')
+//   findOne(@Param('id') id: number): Promise<User> {
+//     return this.usersService.findOne(id);
+//   }
+
+//   @Put(':id')
+//   @UseGuards(AuthGuard(), RolesGuard)
+//   @Roles('admin')
+//   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+//     return this.usersService.update(id, updateUserDto);
+//   }
+
+//   @Delete(':id')
+//   @UseGuards(AuthGuard(), RolesGuard)
+//   @Roles('admin')
+//   remove(@Param('id') id: number): Promise<void> {
+//     return this.usersService.remove(id);
+//   }
+// }

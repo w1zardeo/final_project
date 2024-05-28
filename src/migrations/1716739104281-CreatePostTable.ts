@@ -10,6 +10,7 @@ export class CreatePostTable1716739104281 implements MigrationInterface {
                 "title" character varying NOT NULL,
                 "description" text,
                 "price" double precision NOT NULL,
+                "user_id" INTEGER,
                 CONSTRAINT "PK_post_id" PRIMARY KEY ("id")
             )`
         );

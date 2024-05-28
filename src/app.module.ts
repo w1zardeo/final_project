@@ -7,13 +7,15 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/types/user.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    PostsModule
   ],
   controllers: []
 })

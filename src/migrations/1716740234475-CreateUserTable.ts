@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 export class CreateUserTable1716740234475 implements MigrationInterface {
   name = 'CreateUserTable1716740234475';
