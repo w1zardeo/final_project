@@ -1,48 +1,58 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, ParseIntPipe, Req, Request, NotFoundException, ForbiddenException, Patch } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { RolesGuard } from 'src/auth/role.guards';
 import { Roles } from 'src/auth/roles.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Role } from 'src/auth/role.enum';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post()
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+  @UseGuards(JwtAuthGuard)
+  @Put('activate/:id')
+  async activateUser(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    return this.usersService.activateUser(id, req.user);
   }
 
-  @Get()
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Get(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  findOne(@Param('id') id: number): Promise<User> {
-    return this.usersService.findOne(id);
+  async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return this.usersService.getUserById(id);   
   }
 
-  @Put(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get()
+  getAll(): Promise<User[]> {
+    return this.usersService.getAllUsers();
   }
 
-  @Delete(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
-  @Roles('admin')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.usersService.remove(id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Patch(':id')
+  async updateUser(
+    @Param('id') id: number,
+    @Body() updateData: any, 
+    @Request() req: any
+  ) {
+    const user = await this.usersService.getUserById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.usersService.updateUser(id, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete(':id') 
+  async deleteUser(
+    @Param('id') id: string,
+    @Request() req: any
+  ): Promise<void> {
+    return this.usersService.deleteUser(id);
   }
 }
