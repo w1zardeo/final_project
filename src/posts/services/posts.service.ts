@@ -1,8 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from 'src/users/entities/post.entity';
-import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -10,14 +9,42 @@ export class PostsService {
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
   ) {}
+  async createPost(user: any, title: string, description: string, price: number): Promise<Post> {
+    if (!user.active) {
+      throw new ForbiddenException('User is not active');
+    }
 
-  async createPost(userId: number, title: string, description: string, price: number): Promise<Post> {
+    const user_id = user.id;
 
-    const post = new Post();
-    post.title = title;
-    post.description = description;
-    post.user_id = userId;
-    post.price = price;
+    const post = this.postsRepository.create({ title, description, user_id, price });
     return this.postsRepository.save(post);
   }
+
+  async getAllPosts(): Promise<Post[]> {
+    return this.postsRepository.find();
+  }
+
+  async getPostById(id: number): Promise<Post> {
+    const post = await this.postsRepository.findOneBy({ id });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+    return post;
+  }
+
+  async updatePost(id: number, updateData: Partial<Post>): Promise<Post> {
+    const post = await this.getPostById(id);
+
+    Object.assign(post, updateData);
+
+    return this.postsRepository.save(post);
+  }
+
+  async deletePost(id: string): Promise<void> {
+    const post = await this.postsRepository.delete(id);
+    if (post.affected === 0) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+  }
+
 }

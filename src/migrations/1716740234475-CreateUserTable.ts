@@ -5,7 +5,7 @@ export class CreateUserTable1716740234475 implements MigrationInterface {
   name = 'CreateUserTable1716740234475';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Створення таблиці user
+    
     await queryRunner.query(
       `CREATE TABLE "user" (
                 "id" SERIAL NOT NULL,
@@ -20,10 +20,8 @@ export class CreateUserTable1716740234475 implements MigrationInterface {
             )`,
     );
 
-    // Хешування пароля
     const hashedPassword = await bcrypt.hash('test1234', 10);
 
-    // Вставка початкових даних у таблицю admin
     await queryRunner.query(
       `INSERT INTO "user" ("email", "phone", "name", "role", "active", "password") VALUES 
             ('admin1@example.com', '1234567890', 'Admin One', 'admin', true, '${hashedPassword}'),

@@ -8,7 +8,6 @@ import { JwtStrategy } from './jwt.strategy';
 import { config } from 'dotenv';
 import { ConfigEnum } from 'src/common/enums/config.enum';
 import { ConfigService } from '@nestjs/config';
-import { LocalStrategy } from './local.strategy';
 
 config();
 const configService = new ConfigService();
@@ -18,11 +17,11 @@ const configService = new ConfigService();
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: configService.get(ConfigEnum.JWT_SECRET), // Замініть на свій секретний ключ
+      secret: configService.get(ConfigEnum.JWT_SECRET), 
       signOptions: { expiresIn: '60m' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

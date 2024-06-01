@@ -14,9 +14,17 @@ export class CreatePostTable1716739104281 implements MigrationInterface {
                 CONSTRAINT "PK_post_id" PRIMARY KEY ("id")
             )`
         );
+
+        await queryRunner.query(
+            `ALTER TABLE "post" 
+             ADD CONSTRAINT "FK_post_user_id" 
+             FOREIGN KEY ("user_id") REFERENCES "user"("id") 
+             ON DELETE CASCADE ON UPDATE CASCADE`
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "post" DROP CONSTRAINT "FK_post_user_id"`);
         await queryRunner.query(`DROP TABLE "post"`);
     }
 
