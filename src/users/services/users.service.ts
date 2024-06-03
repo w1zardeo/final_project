@@ -66,11 +66,11 @@ export class UsersService {
   }
 
   async getUserById(id: number): Promise<User> {
-    const post = await this.usersRepository.findOneBy({ id });
-    if (!post) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
       throw new NotFoundException('User not found');
     }
-    return post;
+    return user;
   }
 
   async updateUser(id: number, updateData: Partial<User>): Promise<User> {
